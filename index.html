@@ -108,6 +108,235 @@ a{text-decoration-thickness:1px!important;text-underline-offset:.1em}:where(.wp-
 @font-face{font-family:Manrope;font-style:normal;font-weight:200 800;font-display:fallback;src:url('/wp-content/themes/twentytwentyfive/assets/fonts/manrope/Manrope-VariableFont_wght.woff2') format('woff2');}
 @font-face{font-family:"Fira Code";font-style:normal;font-weight:300 700;font-display:fallback;src:url('/wp-content/themes/twentytwentyfive/assets/fonts/fira-code/FiraCode-VariableFont_wght.woff2') format('woff2');}
 </style>
+
+<style id="wartrump-bomb-fx">
+	:root{
+		--wt-bomb-z: 2147483000;
+	}
+	#wt-bomb-fx-root{
+		position: fixed;
+		inset: 0;
+		pointer-events: none;
+		z-index: var(--wt-bomb-z);
+		overflow: visible;
+	}
+	#wt-bomb-trigger{
+		position: fixed !important;
+		right: 14px;
+		bottom: 14px;
+		z-index: calc(var(--wt-bomb-z) + 1) !important;
+		pointer-events: auto !important;
+		display: inline-flex !important;
+		align-items: center !important;
+		justify-content: center !important;
+		cursor: pointer;
+		border: 3px solid #000;
+		border-radius: 12px;
+		padding: 10px 14px;
+		font-family: "Quantico", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+		font-weight: 900;
+		letter-spacing: 0.8px;
+		text-transform: uppercase;
+		color: #000;
+		background: #f0b90b;
+		box-shadow: 6px 6px 0 #000;
+		transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+	}
+	#wt-bomb-trigger:hover{
+		transform: translate(-2px, -2px);
+		box-shadow: 8px 8px 0 #000;
+		filter: brightness(1.05);
+	}
+	#wt-bomb-trigger:active{
+		transform: translate(2px, 2px);
+		box-shadow: 0 0 0 #000;
+	}
+
+	.wt-bomb{
+		position: absolute;
+		width: 42px;
+		height: 42px;
+		transform: translate(-50%, -50%);
+		will-change: transform, top;
+		filter: drop-shadow(6px 10px 0 rgba(0,0,0,0.45));
+	}
+	.wt-bomb::before{
+		content:"";
+		position:absolute;
+		inset: 6px 10px 6px 10px;
+		background: radial-gradient(circle at 30% 30%, #4b5563 0%, #111827 45%, #030712 100%);
+		border: 3px solid #000;
+		border-radius: 999px;
+		box-shadow: inset 0 0 0 3px rgba(255,255,255,0.06);
+	}
+	.wt-bomb::after{
+		content:"";
+		position:absolute;
+		left: 50%;
+		top: 2px;
+		width: 18px;
+		height: 10px;
+		transform: translateX(-50%) rotate(-10deg);
+		background: linear-gradient(180deg, #facc15 0%, #f97316 70%, #ef4444 100%);
+		border: 3px solid #000;
+		border-bottom: none;
+		border-radius: 10px 10px 0 0;
+		box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+	}
+
+	.wt-bomb-trail{
+		position:absolute;
+		width: 10px;
+		height: 120px;
+		transform: translate(-50%, 0);
+		background: radial-gradient(closest-side, rgba(255,255,255,0.35), rgba(255,255,255,0)) 0 0/10px 18px repeat-y;
+		filter: blur(0.2px) drop-shadow(0 0 10px rgba(251,191,36,0.25));
+		opacity: 0.7;
+		mix-blend-mode: screen;
+	}
+
+	.wt-explosion{
+		position:absolute;
+		width: 10px;
+		height: 10px;
+		transform: translate(-50%, -50%);
+	}
+	.wt-flash{
+		position:absolute;
+		left: 50%;
+		top: 50%;
+		width: 18px;
+		height: 18px;
+		transform: translate(-50%, -50%);
+		border-radius: 999px;
+		background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(251,191,36,0.9) 35%, rgba(249,115,22,0.65) 58%, rgba(239,68,68,0.0) 75%);
+		animation: wt-flash 520ms ease-out forwards;
+	}
+	@keyframes wt-flash{
+		0%{ transform: translate(-50%, -50%) scale(0.4); opacity: 0.0; }
+		15%{ opacity: 1; }
+		100%{ transform: translate(-50%, -50%) scale(18); opacity: 0; }
+	}
+
+	.wt-glow{
+		position: fixed;
+		inset: -20vmax;
+		pointer-events: none;
+		background:
+			radial-gradient(circle at var(--wt-gx) var(--wt-gy),
+				rgba(255,255,255,0.20) 0%,
+				rgba(251,191,36,0.18) 18%,
+				rgba(249,115,22,0.14) 32%,
+				rgba(239,68,68,0.0) 52%);
+		mix-blend-mode: screen;
+		opacity: 0;
+		animation: wt-glow 620ms ease-out forwards;
+		z-index: var(--wt-bomb-z);
+	}
+	@keyframes wt-glow{
+		0%{ opacity: 0; filter: blur(0px) saturate(1.1); }
+		15%{ opacity: 1; filter: blur(1px) saturate(1.35); }
+		100%{ opacity: 0; filter: blur(2px) saturate(1.0); }
+	}
+
+	.wt-shockwave{
+		position:absolute;
+		left: 50%;
+		top: 50%;
+		width: 22px;
+		height: 22px;
+		transform: translate(-50%, -50%);
+		border-radius: 999px;
+		border: 3px solid rgba(255,255,255,0.85);
+		box-shadow:
+			0 0 0 2px rgba(251,191,36,0.55),
+			0 0 26px rgba(249,115,22,0.35);
+		opacity: 0;
+		animation: wt-shockwave 780ms cubic-bezier(.12,.76,.13,1) forwards;
+	}
+	@keyframes wt-shockwave{
+		0%{ transform: translate(-50%, -50%) scale(0.4); opacity: 0; }
+		12%{ opacity: 0.9; }
+		100%{ transform: translate(-50%, -50%) scale(24); opacity: 0; }
+	}
+
+	.wt-fire{
+		position:absolute;
+		left: 50%;
+		top: 50%;
+		width: 20px;
+		height: 20px;
+		transform: translate(-50%, -50%);
+		border-radius: 999px;
+		background: radial-gradient(circle at 30% 25%, rgba(255,255,255,0.85), rgba(251,191,36,0.95) 25%, rgba(249,115,22,0.92) 55%, rgba(239,68,68,0.0) 74%);
+		filter: blur(0.3px) drop-shadow(0 0 20px rgba(249,115,22,0.55));
+		animation: wt-fireball 900ms cubic-bezier(.12,.76,.13,1) forwards;
+	}
+	@keyframes wt-fireball{
+		0%{ transform: translate(-50%, -50%) scale(0.7); opacity: 0; }
+		8%{ opacity: 1; }
+		60%{ transform: translate(-50%, -50%) scale(9.5); opacity: 0.98; }
+		100%{ transform: translate(-50%, -50%) scale(13); opacity: 0; }
+	}
+
+	.wt-ember{
+		position:absolute;
+		left: 50%;
+		top: 50%;
+		width: 6px;
+		height: 6px;
+		border-radius: 999px;
+		background: radial-gradient(circle, #fff 0%, #fbbf24 22%, #f97316 65%, rgba(239,68,68,0) 78%);
+		filter: drop-shadow(0 0 8px rgba(251,191,36,0.55));
+		opacity: 0.95;
+		will-change: transform, opacity;
+		animation: wt-ember 1100ms ease-out forwards;
+	}
+	@keyframes wt-ember{
+		0%{ transform: translate(-50%, -50%) scale(1); opacity: 0.0; }
+		10%{ opacity: 1; }
+		100%{ transform: translate(var(--wt-x), var(--wt-y)) scale(0.2); opacity: 0; }
+	}
+
+	.wt-smoke{
+		position:absolute;
+		left: 50%;
+		top: 50%;
+		width: 26px;
+		height: 26px;
+		border-radius: 999px;
+		background: radial-gradient(circle, rgba(55,65,81,0.65) 0%, rgba(31,41,55,0.55) 35%, rgba(17,24,39,0) 70%);
+		filter: blur(0.6px);
+		will-change: transform, opacity;
+		animation: wt-smoke 1900ms ease-out forwards;
+	}
+	@keyframes wt-smoke{
+		0%{ transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
+		12%{ opacity: 0.8; }
+		100%{ transform: translate(var(--wt-x), calc(var(--wt-y) - 100px)) scale(8.5); opacity: 0; }
+	}
+
+	.wt-shake{
+		animation: wt-shake 320ms ease-in-out;
+	}
+	@keyframes wt-shake{
+		0%{ transform: translate3d(0,0,0); }
+		15%{ transform: translate3d(-2px, 1px, 0); }
+		30%{ transform: translate3d(3px, -2px, 0); }
+		45%{ transform: translate3d(-4px, 2px, 0); }
+		60%{ transform: translate3d(3px, 2px, 0); }
+		75%{ transform: translate3d(-2px, -1px, 0); }
+		100%{ transform: translate3d(0,0,0); }
+	}
+
+	@media (prefers-reduced-motion: reduce){
+		/* Keep UI visible, but avoid heavy animations. */
+		.wt-bomb-trail,
+		.wt-ember,
+		.wt-smoke{ display:none !important; }
+	}
+</style>
+
 <link rel="icon" href="/wp-content/uploads/2026/04/cropped-ICON-WEB-BARNEY-32x32.png" sizes="32x32" />
 <link rel="icon" href="/wp-content/uploads/2026/04/cropped-ICON-WEB-BARNEY-192x192.png" sizes="192x192" />
 <link rel="apple-touch-icon" href="/wp-content/uploads/2026/04/cropped-ICON-WEB-BARNEY-180x180.png" />
@@ -1489,6 +1718,182 @@ var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false
 /*! This file is auto-generated */
 const a=JSON.parse(document.getElementById("wp-emoji-settings").textContent),o=(window._wpemojiSettings=a,"wpEmojiSettingsSupports"),s=["flag","emoji"];function i(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function c(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0);const a=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);return t.every((e,t)=>e===a[t])}function p(e,t){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var n=e.getImageData(16,16,1,1);for(let e=0;e<n.data.length;e++)if(0!==n.data[e])return!1;return!0}function u(e,t,n,a){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\udde8\ud83c\uddf6","\ud83c\udde8\u200b\ud83c\uddf6")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!a(e,"\ud83e\u1fac8")}return!1}function f(e,t,n,a){let r;const o=(r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):document.createElement("canvas")).getContext("2d",{willReadFrequently:!0}),s=(o.textBaseline="top",o.font="600 32px Arial",{});return e.forEach(e=>{s[e]=t(o,e,n,a)}),s}function r(e){var t=document.createElement("script");t.src=e,t.defer=!0,document.head.appendChild(t)}a.supports={everything:!0,everythingExceptFlag:!0},new Promise(t=>{let n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(s),u.toString(),c.toString(),p.toString()].join(",")+"));",a=new Blob([e],{type:"text/javascript"});const r=new Worker(URL.createObjectURL(a),{name:"wpTestEmojiSupports"});return void(r.onmessage=e=>{i(n=e.data),r.terminate(),t(n)})}catch(e){}i(n=f(s,u,c,p))}t(n)}).then(e=>{for(const n in e)a.supports[n]=e[n],a.supports.everything=a.supports.everything&&a.supports[n],"flag"!==n&&(a.supports.everythingExceptFlag=a.supports.everythingExceptFlag&&a.supports[n]);var t;a.supports.everythingExceptFlag=a.supports.everythingExceptFlag&&!a.supports.flag,a.supports.everything||((t=a.source||{}).concatemoji?r(t.concatemoji):t.wpemoji&&t.twemoji&&(r(t.twemoji),r(t.wpemoji)))});
 //# sourceURL=/wp-includes/js/wp-emoji-loader.min.js
+</script>
+
+<div id="wt-bomb-fx-root" aria-hidden="true"></div>
+<button id="wt-bomb-trigger" type="button" aria-label="Drop bomb effect">Drop bomb</button>
+<script id="wartrump-bomb-fx-js">
+(() => {
+	const root = document.getElementById('wt-bomb-fx-root');
+	const btn = document.getElementById('wt-bomb-trigger');
+	if (!root || !btn) return;
+
+	const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+
+	let lastDropAt = 0;
+	const COOLDOWN_MS = 450;
+
+	const rand = (min, max) => min + Math.random() * (max - min);
+	const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+
+	function shake() {
+		document.documentElement.classList.remove('wt-shake');
+		// Force reflow so animation restarts reliably.
+		void document.documentElement.offsetWidth;
+		document.documentElement.classList.add('wt-shake');
+		setTimeout(() => document.documentElement.classList.remove('wt-shake'), 400);
+	}
+
+	function spawnExplosion(x, y, intensity = 1) {
+		// Screen glow (big, cinematic)
+		const glow = document.createElement('div');
+		glow.className = 'wt-glow';
+		glow.style.setProperty('--wt-gx', `${(x / Math.max(1, window.innerWidth)) * 100}%`);
+		glow.style.setProperty('--wt-gy', `${(y / Math.max(1, window.innerHeight)) * 100}%`);
+		glow.style.opacity = String(Math.min(1, 0.9 * intensity));
+		root.appendChild(glow);
+
+		const exp = document.createElement('div');
+		exp.className = 'wt-explosion';
+		exp.style.left = `${x}px`;
+		exp.style.top = `${y}px`;
+
+		const shock = document.createElement('div');
+		shock.className = 'wt-shockwave';
+		shock.style.animationDuration = `${Math.round(780 * Math.max(0.75, 1 / Math.sqrt(intensity)))}ms`;
+		exp.appendChild(shock);
+
+		const flash = document.createElement('div');
+		flash.className = 'wt-flash';
+		exp.appendChild(flash);
+
+		const fire = document.createElement('div');
+		fire.className = 'wt-fire';
+		fire.style.animationDuration = `${Math.round(900 * Math.max(0.8, 1 / Math.sqrt(intensity)))}ms`;
+		exp.appendChild(fire);
+
+		const embers = Math.round(44 * intensity);
+		for (let i = 0; i < embers; i++) {
+			const ember = document.createElement('div');
+			ember.className = 'wt-ember';
+			const angle = rand(0, Math.PI * 2);
+			const dist = rand(120, 520) * intensity;
+			const dx = Math.cos(angle) * dist;
+			const dy = Math.sin(angle) * dist - rand(30, 200) * intensity;
+			ember.style.setProperty('--wt-x', `${dx}px`);
+			ember.style.setProperty('--wt-y', `${dy}px`);
+			ember.style.animationDelay = `${rand(0, 90)}ms`;
+			const size = rand(4, 9) * Math.min(1.35, (0.85 + intensity * 0.2));
+			ember.style.width = `${size}px`;
+			ember.style.height = `${size}px`;
+			ember.style.transform = `translate(-50%, -50%) scale(${rand(0.9, 1.6)})`;
+			exp.appendChild(ember);
+		}
+
+		const smokes = Math.round(14 * Math.min(2.2, intensity));
+		for (let i = 0; i < smokes; i++) {
+			const smoke = document.createElement('div');
+			smoke.className = 'wt-smoke';
+			const dx = rand(-320, 320) * intensity;
+			const dy = rand(-80, 220) * intensity;
+			smoke.style.setProperty('--wt-x', `${dx}px`);
+			smoke.style.setProperty('--wt-y', `${dy}px`);
+			smoke.style.animationDelay = `${rand(0, 160)}ms`;
+			smoke.style.opacity = String(rand(0.45, 0.9));
+			smoke.style.transform = `translate(-50%, -50%) scale(${rand(0.5, 1.1)})`;
+			exp.appendChild(smoke);
+		}
+
+		root.appendChild(exp);
+		shake();
+
+		setTimeout(() => glow.remove(), 800);
+		setTimeout(() => exp.remove(), 1700);
+	}
+
+	function dropBomb(targetX) {
+		const now = Date.now();
+		if (now - lastDropAt < COOLDOWN_MS) return;
+		lastDropAt = now;
+
+		const w = window.innerWidth || 0;
+		const h = window.innerHeight || 0;
+		const x = clamp(targetX ?? rand(60, w - 60), 40, Math.max(40, w - 40));
+		const startY = -60;
+		const endY = clamp(rand(h * 0.55, h * 0.85), 160, h - 80);
+		const durationMs = prefersReducedMotion ? 1 : Math.round(rand(700, 1150));
+		const spin = rand(-420, 420);
+
+		if (prefersReducedMotion) {
+			spawnExplosion(x, endY);
+			return;
+		}
+
+		const bomb = document.createElement('div');
+		bomb.className = 'wt-bomb';
+		bomb.style.left = `${x}px`;
+		bomb.style.top = `${startY}px`;
+		bomb.style.transform = `translate(-50%, -50%) rotate(${rand(-25, 25)}deg)`;
+
+		const trail = document.createElement('div');
+		trail.className = 'wt-bomb-trail';
+		trail.style.left = `${x}px`;
+		trail.style.top = `${startY + 20}px`;
+		root.appendChild(trail);
+		root.appendChild(bomb);
+
+		const start = performance.now();
+		const easeIn = (t) => t * t;
+
+		function frame(ts) {
+			const t = clamp((ts - start) / durationMs, 0, 1);
+			const eased = easeIn(t);
+			const y = startY + (endY - startY) * eased;
+
+			bomb.style.top = `${y}px`;
+			bomb.style.transform = `translate(-50%, -50%) rotate(${spin * t}deg)`;
+
+			trail.style.top = `${y - 80}px`;
+			trail.style.opacity = String(1 - t * 0.25);
+
+			if (t < 1) {
+				requestAnimationFrame(frame);
+			} else {
+				bomb.remove();
+				trail.remove();
+				spawnExplosion(x, endY);
+			}
+		}
+
+		requestAnimationFrame(frame);
+	}
+
+	btn.addEventListener('click', () => dropBomb());
+
+	// Shortcut: press "B" anywhere to drop a bomb.
+	document.addEventListener('keydown', (e) => {
+		if (e.repeat) return;
+		if (e.key?.toLowerCase?.() === 'b') dropBomb();
+	});
+
+	function boomAt(clientX, clientY) {
+		const w = window.innerWidth || 0;
+		const h = window.innerHeight || 0;
+		const x = clamp(clientX ?? rand(60, w - 60), 40, Math.max(40, w - 40));
+		const y = clamp(clientY ?? rand(h * 0.45, h * 0.85), 120, Math.max(120, h - 60));
+		const now = Date.now();
+		if (now - lastDropAt < COOLDOWN_MS) return;
+		lastDropAt = now;
+		spawnExplosion(x, y, 1);
+	}
+
+	// Click anywhere: boom + sparks at cursor.
+	document.addEventListener('click', (e) => {
+		// Ignore clicks on the button itself (it already triggers a drop).
+		if (e.target === btn) return;
+		boomAt(e.clientX, e.clientY);
+	});
+})();
 </script>
 	</body>
 </html>
